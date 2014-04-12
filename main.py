@@ -5,11 +5,10 @@ import json
 # the App Engine WSGI application server.
 
 
-@app.route('/')
+@app.route('/test')
 def hello():
     """Return a friendly HTTP greeting."""
     return json.dumps({"Foo": ["bar", "can", "haz"]})
-    #return "Hello"
 
 @app.errorhandler(404)
 def page_not_found(e):
