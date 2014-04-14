@@ -24,7 +24,7 @@ class Post(db.Model):
   photo = db.StringProperty(required=True)
   t = db.IntegerProperty(required=True)
 
-@app.route('/test')
+@app.route('/api/test')
 def test():
     """Return a friendly HTTP greeting."""
     return json.dumps({"Foo": ["bar", "can", "haz"]})
@@ -37,7 +37,7 @@ def filter(data, fields):
     return data
     
 
-@app.route('/post', methods=["GET", "POST"])
+@app.route('/api/post', methods=["GET", "POST"])
 def post():
     if request.method == 'POST':
         """ creat post """
@@ -54,7 +54,7 @@ def post():
         res = {"datas": [each._entity for each in p]}
         return json.dumps(res)
 
-@app.route('/clean')
+@app.route('/api/clean')
 def clean():
      query = Post.all(keys_only=True)
      entries = query.fetch(1000)
