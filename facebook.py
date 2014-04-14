@@ -17,7 +17,6 @@ def log():
     username = me.data["username"]
     return 'My name is %s' % me.data['name']
 
-import urllib3
 @app.route('/auth/picture')
 def picture():
     return module.picture()

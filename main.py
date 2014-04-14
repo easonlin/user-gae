@@ -1,8 +1,10 @@
 from flask import Flask
-from flask import request
+from flask import (request, url_for, session)
 #from pymongo import MongoClient
+SECRET_KEY = 'development key'
 app = Flask(__name__)
 app.config["DEBUG"] = True
+app.secret_key = SECRET_KEY
 # wrap the application
 from werkzeug import DebuggedApplication
 app.wsgi_app = DebuggedApplication(app.wsgi_app, evalex=True)
@@ -16,6 +18,8 @@ import json
 import time
 from google.appengine.ext import db
 from google.appengine.api import users
+import module
+facebook = module.facebook
 
 
 class Post(db.Model):
@@ -23,6 +27,31 @@ class Post(db.Model):
   name = db.StringProperty(required=True)
   photo = db.StringProperty(required=True)
   t = db.IntegerProperty(required=True)
+
+@app.route('/api/login')
+def login():
+    return facebook.authorize(callback=url_for('facebook_authorized',
+        next=request.args.get('next') or request.referrer or None, _external=True))
+@app.route('/auth/login/authorized')
+@facebook.authorized_handler
+def facebook_authorized(resp):
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description'])
+    session['oauth_token'] = (resp['access_token'], '')
+    me = facebook.get('/me')
+    return 'Logged in as id=%s name=%s redirect=%s' % \
+        (me.data['id'], me.data['name'], request.args.get('next'))
+
+@app.route('/auth/logout')
+def logout():
+    oauth_token = session.pop('oauth_token', None)
+    return redirect(request.referrer or url_for('log'))
+
+@facebook.tokengetter
+def get_facebook_oauth_token():
+    return session.get('oauth_token')
 
 @app.route('/api/test')
 def test():
