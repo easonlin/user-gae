@@ -1,10 +1,4 @@
 from flask import Flask, redirect, url_for, session, request, flash
-from flask import make_response
-import os
-import httplib2
-httplib2.CA_CERTS = \
-    os.path.join(os.path.dirname(os.path.abspath(__file__ )), "cacert.pem")
-from flask_oauth import OAuth
 import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
