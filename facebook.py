@@ -1,4 +1,5 @@
 from flask import Flask, redirect, url_for, session, request, flash
+from flask import make_response
 import os
 import httplib2
 httplib2.CA_CERTS = \
@@ -29,11 +30,26 @@ facebook = oauth.remote_app('facebook',
     request_token_params={'scope': 'email'}
 )
 
+
 @app.route('/auth/log')
 def log():
-    logger.error("oauth_token %s", session['oauth_token'])
     me = facebook.get('/me')
+    username = me.data["username"]
     return 'My name is %s' % me.data['name']
+
+import urllib3
+@app.route('/auth/picture')
+def picture():
+    me = facebook.get('/me')
+    username = me.data["username"]
+    http = urllib3.PoolManager()
+    r = http.request('GET',
+        'http://graph.facebook.com/%s/picture?type=large'\
+         % username)
+    content_type = r.getheader("content-type")
+    response = make_response(r.data)
+    response.headers['Content-Type'] = content_type
+    return response
 
 @app.route('/auth')
 def index():
@@ -56,7 +72,6 @@ def facebook_authorized(resp):
             request.args['error_description']
         )
     session['oauth_token'] = (resp['access_token'], '')
-    logger.error("oauth_token %s", session['oauth_token'])
     me = facebook.get('/me')
     return 'Logged in as id=%s name=%s redirect=%s' % \
         (me.data['id'], me.data['name'], request.args.get('next'))
