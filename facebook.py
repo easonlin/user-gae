@@ -8,27 +8,13 @@ from flask_oauth import OAuth
 import logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
-
+import module
+facebook = module.facebook
 SECRET_KEY = 'development key'
 DEBUG = True
-FACEBOOK_APP_ID = '1474687689427487'
-FACEBOOK_APP_SECRET = 'f824d0d58c7594f0e380c1367a1dd7a1'
-
-
 app = Flask(__name__)
 app.debug = DEBUG
 app.secret_key = SECRET_KEY
-oauth = OAuth()
-
-facebook = oauth.remote_app('facebook',
-    base_url='https://graph.facebook.com/',
-    request_token_url=None,
-    access_token_url='/oauth/access_token',
-    authorize_url='https://www.facebook.com/dialog/oauth',
-    consumer_key=FACEBOOK_APP_ID,
-    consumer_secret=FACEBOOK_APP_SECRET,
-    request_token_params={'scope': 'email'}
-)
 
 
 @app.route('/auth/log')
@@ -40,16 +26,7 @@ def log():
 import urllib3
 @app.route('/auth/picture')
 def picture():
-    me = facebook.get('/me')
-    username = me.data["username"]
-    http = urllib3.PoolManager()
-    r = http.request('GET',
-        'http://graph.facebook.com/%s/picture?type=large'\
-         % username)
-    content_type = r.getheader("content-type")
-    response = make_response(r.data)
-    response.headers['Content-Type'] = content_type
-    return response
+    return module.picture()
 
 @app.route('/auth')
 def index():
