@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import (request, url_for, session)
+from flask import (request, url_for, session, redirect)
 #from pymongo import MongoClient
 SECRET_KEY = 'development key'
 app = Flask(__name__)
@@ -28,10 +28,25 @@ class Post(db.Model):
   photo = db.StringProperty(required=True)
   t = db.IntegerProperty(required=True)
 
-@app.route('/api/login')
+@app.route('/auth/login')
 def login():
     return facebook.authorize(callback=url_for('facebook_authorized',
         next=request.args.get('next') or request.referrer or None, _external=True))
+
+@app.route('/auth/status')
+def status():
+  if not session.get('oauth_token'):
+    return json.dumps({'islogin': False})
+  me = facebook.get('/me') 
+  username = me.data["username"]
+  return json.dumps({'username': username,
+                     'islogin': True})  
+
+@app.route('/api/picture')
+def picture():
+  return module.picture()
+   
+
 @app.route('/auth/login/authorized')
 @facebook.authorized_handler
 def facebook_authorized(resp):
@@ -40,22 +55,23 @@ def facebook_authorized(resp):
             request.args['error_reason'],
             request.args['error_description'])
     session['oauth_token'] = (resp['access_token'], '')
-    me = facebook.get('/me')
-    return 'Logged in as id=%s name=%s redirect=%s' % \
-        (me.data['id'], me.data['name'], request.args.get('next'))
+    return redirect('/message/index.html')
 
 @app.route('/auth/logout')
 def logout():
     oauth_token = session.pop('oauth_token', None)
-    return redirect(request.referrer or url_for('log'))
+    return redirect(request.referrer or '/message/index.html')
 
 @facebook.tokengetter
 def get_facebook_oauth_token():
     return session.get('oauth_token')
 
+import base64
 @app.route('/api/test')
 def test():
     """Return a friendly HTTP greeting."""
+    pic = module.picture()
+    logger.info("data:image/jpeg;"+base64.b64encode(pic.data))
     return json.dumps({"Foo": ["bar", "can", "haz"]})
 
 def filter(data, fields):

@@ -4,8 +4,22 @@
     <script src="http://code.angularjs.org/1.0.6/angular.min.js"></script>
     <script src="script.js"></script>
   </head>
-    <div ng-controller="JsonController" class="example">
-      <pre>user={{user | json}}</pre>
+    <div ng-controller="Controller">
+      <div ng-switch on="islogin">
+        <div ng-switch-when="true">
+          <img ng-src="http://192.168.245.154/api/picture"/>
+          <textarea type="text" ng-model="username"/>
+          <br>
+          <button ng-click="logout()">Logout with Facebook</button>
+          <button ng-click="post()">Post</button><br>
+        </div>
+        <div ng-switch-default>
+          <button ng-click="login()">Login with Facebook</button><br>
+        </div>
+      </div>
+      <pre>{{posts|json}}</pre>
+      <pre>{{username}}</pre>
+      <pre>{{islogin}}</pre>
     </div>
   </body>
 </html>
