@@ -20,13 +20,7 @@ from google.appengine.ext import db
 from google.appengine.api import users
 import module
 facebook = module.facebook
-
-
-class Post(db.Model):
-  message = db.StringProperty(required=True)
-  name = db.StringProperty(required=True)
-  photo = db.StringProperty(required=True)
-  t = db.IntegerProperty(required=True)
+from module import Post
 
 @app.route('/auth/login')
 def login():
@@ -46,6 +40,9 @@ def status():
 def picture():
   return module.picture()
    
+@app.route('/api/picture/<int:post_id>')
+def post_picture(post_id):
+  return module.post_picture(post_id)
 
 @app.route('/auth/login/authorized')
 @facebook.authorized_handler
@@ -88,8 +85,13 @@ def post():
         """ creat post """
         #data = {"message": "Hello", "name": "Eason Lin", "photo":"a"}
         data = request.get_json(force=True)
-        data = filter(data, ["message", "name", "photo"])
+        data = filter(data, ["message"])
         data["t"] = int(time.time())
+        picture = module.picture()
+        data["picture"] = picture.data
+        me = facebook.get('/me')
+        data["name"] = me.data["username"]
+        data["content_type"] = picture.content_type
         p = Post(**data)
         p.put()
         return ""
