@@ -13,7 +13,7 @@
           </td>
           <td>{{name}}</td>
           <tr>
-          <td><textarea type="text" ng-model="$parent.message"></textarea>
+          <td><textarea style="resize:none" rows="4" cols="50" type="text" ng-model="$parent.message"></textarea>
           </td>
           </table>
           <br>
@@ -32,7 +32,7 @@
             <img ng-src="http://192.168.245.154/api/picture/{{post.id}}" width=30/>
           </td>
           <td>{{post.name}}</td>
-          <td>{{post.message}}</td>
+          <td><textarea readonly style="resize:none" rows="4" cols="50">{{post.message}}</textarea></td>
           </tr>
       </table>
       <pre>{{name}}</pre>
