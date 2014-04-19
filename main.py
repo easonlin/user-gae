@@ -98,7 +98,15 @@ def post():
     else:
         """ list post """
         p = Post.all().order("-t")
-        res = {"datas": [each._entity for each in p]}
+        def to_dict(data, fields):
+            rtn = {}
+            for each in fields:
+                if each == "id":
+                    rtn["id"] = data.key().id()
+                else:
+                    rtn[each] = data._entity.get(each)
+            return rtn
+        res = {"datas": [to_dict(each, ["id", "t", "name", "message"]) for each in p]}
         return json.dumps(res)
 
 @app.route('/api/clean')

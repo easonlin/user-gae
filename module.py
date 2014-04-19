@@ -48,7 +48,7 @@ def picture():
 def post_picture(post_id):
     post = Post.get_by_id(post_id)
     content_type = post.content_type
-    response = make_response(r.data)
+    response = make_response(post.picture)
     response.headers['Content-Type'] = content_type
     return response
      
