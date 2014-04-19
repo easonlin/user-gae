@@ -13,8 +13,7 @@
           </td>
           <td>{{username}}</td>
           <tr>
-          <td><textarea type="text" ng-model="username"/>
-          </textarea>
+          <td><textarea type="text" ng-model="message"></textarea>
           </td>
           </table>
           <br>
@@ -27,9 +26,19 @@
         <div ng-switch-default>
         </div>
       </div>
-      <pre>{{posts|json}}</pre>
+      <table>
+          <tr ng-repeat="post in posts.datas">
+          <td width=30 >
+            <img ng-src="http://192.168.245.154/api/picture{{post.photo}}" width=30/>
+          </td>
+          <td>{{post.name}}</td>
+          <td>{{post.message}}</td>
+          </tr>
+      </table>
       <pre>{{username}}</pre>
       <pre>{{islogin}}</pre>
+      <pre>{{message}}</pre>
+      <pre>{{posts|json}}</pre>
     </div>
   </body>
 </html>
