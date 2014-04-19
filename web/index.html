@@ -11,7 +11,7 @@
           <td rowspan=2 width=30>
             <img ng-src="http://192.168.245.154/api/picture" width=30/>
           </td>
-          <td>{{username}}</td>
+          <td>{{name}}</td>
           <tr>
           <td><textarea type="text" ng-model="message"></textarea>
           </td>
@@ -35,7 +35,7 @@
           <td>{{post.message}}</td>
           </tr>
       </table>
-      <pre>{{username}}</pre>
+      <pre>{{name}}</pre>
       <pre>{{islogin}}</pre>
       <pre>{{message}}</pre>
       <pre>{{posts|json}}</pre>

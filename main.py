@@ -93,8 +93,8 @@ def post():
         data["name"] = me.data["username"]
         data["content_type"] = picture.content_type
         p = Post(**data)
-        p.put()
-        return ""
+        id = p.put()
+        return json.dumps({"id": p.key().id()})
     else:
         """ list post """
         p = Post.all().order("-t")
