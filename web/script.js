@@ -14,8 +14,6 @@ function Controller($scope, $http) {
   });
   $http({method: 'GET', url:'http://192.168.245.154/auth/status'}).success(function (data){
     $scope.islogin = data.islogin;
-    $scope.islogin = "true"
     $scope.username = data.username;
-    $scope.username = "hi"
   });
 };
