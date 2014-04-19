@@ -27,7 +27,7 @@ facebook = oauth.remote_app('facebook',
 )
 
 class Post(db.Model):
-  message = db.StringProperty(required=True)
+  message = db.StringProperty(required=True, multiline=True)
   name = db.StringProperty(required=True)
   picture = db.BlobProperty(required=True)
   content_type = db.StringProperty(required=True)
