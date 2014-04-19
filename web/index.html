@@ -16,7 +16,6 @@
           <td><textarea style="resize:none" rows="4" cols="50" type="text" ng-model="$parent.message"></textarea>
           </td>
           </table>
-          <br>
           <button ng-click="logout()">Logout with Facebook</button>
           <button ng-click="post()">Post</button><br>
         </div>
@@ -26,15 +25,19 @@
         <div ng-switch-default>
         </div>
       </div>
-      <table>
+      <table><tbody>
           <tr ng-repeat="post in posts.datas">
           <td width=30 >
             <img ng-src="http://192.168.245.154/api/picture/{{post.id}}" width=30/>
           </td>
-          <td>{{post.name}}</td>
-          <td><textarea readonly style="resize:none" rows="4" cols="50">{{post.message}}</textarea></td>
+          <td>
+            <table><tbody>
+             <tr><td>{{post.name}}</td></tr>
+             <tr><td><textarea readonly style="resize:none" rows="4" cols="50">{{post.message}}</textarea></td></tr>
+            </tbody></table>
+          </td>
           </tr>
-      </table>
+      </tbody></table>
       <pre>{{name}}</pre>
       <pre>{{islogin}}</pre>
       <pre>{{message}}</pre>
