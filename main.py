@@ -120,3 +120,40 @@ def clean():
 def page_not_found(e):
     """Return a custom 404 error."""
     return 'Sorry, nothing at this URL.', 404
+
+
+# ============================
+# jinja2
+# ===========================
+import jinja2
+import os
+JINJA_ENVIRONMENT = jinja2.Environment(
+    loader=jinja2.FileSystemLoader(
+        os.path.join(os.path.dirname(__file__),"templates")),
+    extensions=['jinja2.ext.autoescape'],
+    autoescape=True)
+def render_template(name, template_values={}):
+    template = JINJA_ENVIRONMENT.get_template(name)
+    return template.render(template_values)
+@app.route('/web/login')
+def web_login():
+    return facebook.authorize(callback=url_for('web_facebook_authorized',
+        next=request.args.get('next') or request.referrer or None, _external=True))
+    pass
+
+@app.route('/web/login/authorized')
+@facebook.authorized_handler
+def web_facebook_authorized(resp):
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description'])
+    session['oauth_token'] = (resp['access_token'], '')
+    return redirect(url_for('web_index'))
+
+@app.route('/web/index.html')
+def web_index():
+    if session.get('oauth_token'):
+        return render_template('web_main.html')
+    else:
+        return render_template('web_login.html')
