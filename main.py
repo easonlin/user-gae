@@ -76,6 +76,8 @@ def filter(data, fields):
     for each in keys:
         if each not in fields:
             del data[each]
+        if isinstance(data[each], list):
+            data[each] = ",".join(data[each])
     return data
     
 def get_posts():
@@ -90,22 +92,27 @@ def get_posts():
 	return rtn
     return [to_dict(each, ["id", "t", "name", "message"]) for each in p]
 
+def fill_post(data):
+    data = filter(data, ["message"])
+    data["t"] = int(time.time())
+    picture = module.picture()
+    data["picture"] = picture.data
+    me = facebook.get('/me')
+    data["name"] = me.data["username"]
+    data["content_type"] = picture.content_type
+    p = Post(**data)
+    _id = p.put()
+    id = p.key().id()
+    return id
+
 @app.route('/api/post', methods=["GET", "POST"])
 def post():
     if request.method == 'POST':
         """ creat post """
         #data = {"message": "Hello", "name": "Eason Lin", "photo":"a"}
         data = request.get_json(force=True)
-        data = filter(data, ["message"])
-        data["t"] = int(time.time())
-        picture = module.picture()
-        data["picture"] = picture.data
-        me = facebook.get('/me')
-        data["name"] = me.data["username"]
-        data["content_type"] = picture.content_type
-        p = Post(**data)
-        id = p.put()
-        return json.dumps({"id": p.key().id()})
+        id = fill_post(data)
+        return json.dumps({"id": id})
     else:
         """ list post """
         p = Post.all().order("-t")
@@ -171,6 +178,13 @@ def web_index():
         return render_template('web_main.html', {"posts": posts, "name": username})
     else:
         return render_template('web_login.html', {"posts": posts})
+
+@app.route('/web/post', methods=["POST"])
+def web_post():
+    data = dict(request.form)
+    logger.info("data is %s", data)
+    fill_post(data)
+    return redirect(url_for('web_index'))
 
 @app.route('/web/logout')
 def web_logout():
