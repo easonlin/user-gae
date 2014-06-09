@@ -1,1 +1,33 @@
-main page
+<html>
+  <head>
+  </head>
+          <table>
+          <td rowspan=2 width=30>
+            <img src="http://192.168.245.154/api/picture" width=30/>
+          </td>
+          <td>{{name}}</td>
+          <tr>
+          <td><textarea form="postform" name="message" style="resize:none" rows="4" cols="50" type="text"></textarea>
+          </td>
+          </table>
+          <input type="button" onClick="window.location='../web/logout'" value='Logout with Facebook'>
+          <form action="web/post" id="postform">
+            <input type="submit" value="Post.............">
+          </form>
+      <table><tbody>
+          {% for post in posts %}
+          <tr>
+          <td width=30 >
+            <img src="http://192.168.245.154/api/picture/{{post.id}}" width=30/>
+          </td>
+          <td>
+            <table><tbody>
+             <tr><td>{{post.name}}</td></tr>
+             <tr><td><textarea readonly style="resize:none" rows="4" cols="50">{{post.message}}</textarea></td></tr>
+            </tbody></table>
+          </td>
+          </tr>
+          {% endfor %}
+      </tbody></table>
+  </body>
+</html>

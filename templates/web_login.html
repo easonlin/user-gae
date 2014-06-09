@@ -1,1 +1,23 @@
-login page
+<html>
+  <head>
+  </head>
+  <body>
+    <input type=button onClick="window.location='../../web/login'", value="Click login with Facebook.">
+    <br>
+    <table><tbody>
+    {% for post in posts %}
+      <tr>
+        <td width=30 >
+          <img src="http://192.168.245.154/api/picture/{{post.id}}" width=30/>
+        </td>
+        <td>
+          <table><tbody>
+           <tr><td>{{post.name}}</td></tr>
+           <tr><td><textarea readonly style="resize:none" rows="4" cols="50">{{post.message}}</textarea></td></tr>
+          </tbody></table>
+        </td>
+       </tr>
+     {% endfor %}
+     </tbody></table>
+  </body>
+</html>

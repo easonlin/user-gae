@@ -78,6 +78,17 @@ def filter(data, fields):
             del data[each]
     return data
     
+def get_posts():
+    p = Post.all().order("-t")
+    def to_dict(data, fields):
+	rtn = {}
+	for each in fields:
+	    if each == "id":
+		rtn["id"] = data.key().id()
+	    else:
+		rtn[each] = data._entity.get(each)
+	return rtn
+    return [to_dict(each, ["id", "t", "name", "message"]) for each in p]
 
 @app.route('/api/post', methods=["GET", "POST"])
 def post():
@@ -106,7 +117,7 @@ def post():
                 else:
                     rtn[each] = data._entity.get(each)
             return rtn
-        res = {"datas": [to_dict(each, ["id", "t", "name", "message"]) for each in p]}
+        res = {"datas": get_posts()}
         return json.dumps(res)
 
 @app.route('/api/clean')
@@ -141,7 +152,7 @@ def web_login():
         next=request.args.get('next') or request.referrer or None, _external=True))
     pass
 
-@app.route('/web/login/authorized')
+@app.route('/web/authorized')
 @facebook.authorized_handler
 def web_facebook_authorized(resp):
     if resp is None:
@@ -153,7 +164,16 @@ def web_facebook_authorized(resp):
 
 @app.route('/web/index.html')
 def web_index():
+    posts = get_posts()
     if session.get('oauth_token'):
-        return render_template('web_main.html')
+        me = facebook.get('/me')
+        username = me.data["username"]
+        return render_template('web_main.html', {"posts": posts, "name": username})
     else:
-        return render_template('web_login.html')
+        return render_template('web_login.html', {"posts": posts})
+
+@app.route('/web/logout')
+def web_logout():
+    oauth_token = session.pop('oauth_token', None)
+    return redirect(url_for('web_index'))
+
